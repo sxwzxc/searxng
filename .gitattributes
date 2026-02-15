@@ -10,3 +10,27 @@
 *.woff -diff
 *.woff2 -diff
 messages.mo -diff
+
+# Handle line endings for Windows compatibility
+* text=auto
+
+# Shell scripts should always use LF (Unix-style)
+*.sh text eol=lf
+manage text eol=lf
+
+# Windows batch files should always use CRLF
+*.bat text eol=crlf
+
+# Python files should use LF
+*.py text eol=lf
+
+# YAML and config files should use LF
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.json text eol=lf
+
+# Markdown and documentation
+*.md text eol=lf
+*.rst text eol=lf
+*.txt text eol=lf

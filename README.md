@@ -49,8 +49,14 @@ cd searxng
 
 在 SearXNG 目录中运行：
 
+**使用命令提示符 (CMD):**
 ```cmd
 manage.bat pyenv.install
+```
+
+**或使用 PowerShell (推荐):**
+```powershell
+.\manage.ps1 pyenv.install
 ```
 
 这个命令会：
@@ -62,8 +68,14 @@ manage.bat pyenv.install
 
 安装完成后，启动开发服务器：
 
+**使用命令提示符 (CMD):**
 ```cmd
 manage.bat webapp.run
+```
+
+**或使用 PowerShell (推荐):**
+```powershell
+.\manage.ps1 webapp.run
 ```
 
 现在可以在浏览器中访问：
@@ -129,19 +141,33 @@ ui:
 
 ## 可用命令
 
-`manage.bat` 提供以下命令：
+SearXNG 提供了两种 Windows 管理脚本：
+
+### manage.bat (命令提示符)
 
 | 命令 | 说明 |
 |------|------|
-| `help` | 显示帮助信息 |
-| `pyenv.install` | 创建虚拟环境并安装依赖 |
-| `pyenv.cmd <命令>` | 在虚拟环境中执行命令 |
-| `webapp.run` | 运行开发服务器 |
-| `py.clean` | 清理虚拟环境和构建文件 |
-| `test.py` | 运行 Python 测试 |
+| `manage.bat help` | 显示帮助信息 |
+| `manage.bat pyenv.install` | 创建虚拟环境并安装依赖 |
+| `manage.bat pyenv.cmd <命令>` | 在虚拟环境中执行命令 |
+| `manage.bat webapp.run` | 运行开发服务器 |
+| `manage.bat py.clean` | 清理虚拟环境和构建文件 |
+| `manage.bat test.py` | 运行 Python 测试 |
+
+### manage.ps1 (PowerShell，推荐)
+
+| 命令 | 说明 |
+|------|------|
+| `.\manage.ps1 help` | 显示帮助信息 |
+| `.\manage.ps1 pyenv.install` | 创建虚拟环境并安装依赖 |
+| `.\manage.ps1 pyenv.cmd <命令>` | 在虚拟环境中执行命令 |
+| `.\manage.ps1 webapp.run` | 运行开发服务器 |
+| `.\manage.ps1 py.clean` | 清理虚拟环境和构建文件 |
+| `.\manage.ps1 test.py` | 运行 Python 测试 |
 
 ### 使用示例
 
+**使用命令提示符 (CMD):**
 ```cmd
 # 查看帮助
 manage.bat help
@@ -160,6 +186,32 @@ manage.bat test.py
 
 # 清理环境
 manage.bat py.clean
+```
+
+**使用 PowerShell (推荐):**
+```powershell
+# 查看帮助
+.\manage.ps1 help
+
+# 安装依赖
+.\manage.ps1 pyenv.install
+
+# 运行服务器
+.\manage.ps1 webapp.run
+
+# 在虚拟环境中执行 Python 命令
+.\manage.ps1 pyenv.cmd python -m searx.version
+
+# 运行测试
+.\manage.ps1 test.py
+
+# 清理环境
+.\manage.ps1 py.clean
+```
+
+**注意**: 如果 PowerShell 提示执行策略错误，运行：
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
 ## 故障排除
