@@ -212,59 +212,6 @@ function Test-ThemeBuild {
     return $true
 }
 
-function Install-PyEnv {
-    Write-Host "Creating virtual environment..." -ForegroundColor Cyan
-
-    if (-not (Test-Path $VenvDir)) {
-        python -m venv $VenvDir
-        if ($LASTEXITCODE -ne 0) {
-            Write-Host "ERROR: Failed to create virtual environment" -ForegroundColor Red
-            return $false
-        }
-    }
-
-    Write-Host "Installing dependencies..." -ForegroundColor Cyan
-    $activateScript = Join-Path $VenvDir "Scripts\Activate.ps1"
-
-    & $activateScript
-    Write-Host "Upgrading pip and installing build tools..." -ForegroundColor Yellow
-    python -m pip install --upgrade pip setuptools wheel
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "ERROR: Failed to install build tools" -ForegroundColor Red
-        return $false
-    }
-    
-    Write-Host "Installing base dependencies from requirements.txt..." -ForegroundColor Yellow
-    python -m pip install -r requirements.txt
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "ERROR: Failed to install base dependencies" -ForegroundColor Red
-        return $false
-    }
-    
-    Write-Host "Installing project in editable mode with test dependencies..." -ForegroundColor Yellow
-    python -m pip install --use-pep517 --no-build-isolation -e ".[test]"
-
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "ERROR: Failed to install project" -ForegroundColor Red
-        return $false
-    }
-
-    Write-Host "Virtual environment created and dependencies installed successfully!" -ForegroundColor Green
-    
-    # Check and build theme if Node.js is available
-    if (Test-NodeInstalled) {
-        Write-Host ""
-        Write-Host "Building theme static files..." -ForegroundColor Cyan
-        Build-Theme
-    } else {
-        Write-Host ""
-        Write-Host "WARNING: Node.js not found. Theme static files not built." -ForegroundColor Yellow
-        Write-Host "To build theme: Install Node.js from https://nodejs.org/ and run: .\manage.ps1 theme.build" -ForegroundColor Yellow
-    }
-    
-    return $true
-}
-
 function Invoke-PyEnvCmd {
     $activateScript = Join-Path $VenvDir "Scripts\Activate.ps1"
 

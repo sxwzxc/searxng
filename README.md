@@ -267,7 +267,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ## 故障排除
 
-### 问题 0: 页面显示异常，图标过大或布局混乱
+### 问题 1: 页面显示异常，图标过大或布局混乱
 
 **症状**: 访问 http://localhost:8888 时，页面布局不正常，图标显示异常大，CSS 样式缺失
 
@@ -299,7 +299,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
    manage.bat webapp.run
    ```
 
-### 问题 1: Python 未找到
+### 问题 2: Python 未找到
 
 **错误信息**: `'python' 不是内部或外部命令`
 
@@ -311,7 +311,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
    - 在 "系统变量" 中找到 "Path"，点击 "编辑"
    - 添加 Python 安装目录（如 `C:\Python310` 和 `C:\Python310\Scripts`）
 
-### 问题 2: 依赖安装失败
+### 问题 3: 依赖安装失败
 
 **错误信息**: `Failed to build` 或 `error: Microsoft Visual C++ 14.0 is required`
 
@@ -322,7 +322,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
    - 选择 "C++ build tools" 工作负载
 2. 或者安装 Visual Studio Community 版本
 
-### 问题 3: 端口被占用
+### 问题 4: 端口被占用
 
 **错误信息**: `Address already in use` 或 `[Errno 10048]`
 
@@ -334,7 +334,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
    taskkill /PID <进程ID> /F
    ```
 
-### 问题 4: 无法访问搜索引擎
+### 问题 5: 无法访问搜索引擎
 
 **症状**: SearXNG 运行正常，但搜索无结果
 
@@ -343,7 +343,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 2. 某些搜索引擎可能被防火墙阻止，检查防火墙设置
 3. 检查配置文件中启用的搜索引擎列表
 
-### 问题 5: Git 命令不可用
+### 问题 6: Git 命令不可用
 
 **症状**: 版本信息显示为 "1.0.0"
 
