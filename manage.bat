@@ -35,6 +35,15 @@ if %PYTHON_MAJOR% EQU 3 if %PYTHON_MINOR% LSS 10 (
 
 REM Set up virtual environment path
 set "VENV_DIR=%SCRIPT_DIR%.venv"
+set "CLIENT_DIR=%SCRIPT_DIR%client\simple"
+
+REM Check if Node.js is installed
+node --version >nul 2>&1
+if errorlevel 1 (
+    set "NODE_AVAILABLE=0"
+) else (
+    set "NODE_AVAILABLE=1"
+)
 
 if "%1"=="" goto help
 if "%1"=="help" goto help
@@ -42,6 +51,8 @@ if "%1"=="--help" goto help
 if "%1"=="-h" goto help
 if "%1"=="pyenv.install" goto pyenv_install
 if "%1"=="pyenv.cmd" goto pyenv_cmd
+if "%1"=="theme.build" goto theme_build
+if "%1"=="theme.check" goto theme_check
 if "%1"=="webapp.run" goto webapp_run
 if "%1"=="py.clean" goto py_clean
 if "%1"=="test.py" goto test_py
@@ -57,6 +68,8 @@ echo Available commands:
 echo   help            - Show this help message
 echo   pyenv.install   - Create virtual environment and install dependencies
 echo   pyenv.cmd       - Run a command in the virtual environment
+echo   theme.build     - Build theme static files (requires Node.js)
+echo   theme.check     - Check if theme static files are up to date
 echo   webapp.run      - Run the development server
 echo   py.clean        - Clean up virtual environment and build artifacts
 echo   test.py         - Run Python tests
@@ -67,6 +80,7 @@ echo   - Git Bash with the ./manage script
 echo.
 echo Examples:
 echo   manage.bat pyenv.install
+echo   manage.bat theme.build
 echo   manage.bat webapp.run
 echo   manage.bat pyenv.cmd python -m searx.version
 exit /b 0
@@ -102,6 +116,68 @@ if errorlevel 1 (
     exit /b 1
 )
 echo Virtual environment created and dependencies installed successfully!
+echo.
+if "%NODE_AVAILABLE%"=="1" (
+    echo Building theme static files...
+    call :theme_build_internal
+) else (
+    echo WARNING: Node.js not found. Theme static files not built.
+    echo To build theme: Install Node.js from https://nodejs.org/ and run: manage.bat theme.build
+)
+exit /b 0
+
+:theme_build_internal
+if not exist "%CLIENT_DIR%" (
+    echo ERROR: Client directory not found: %CLIENT_DIR%
+    exit /b 1
+)
+pushd "%CLIENT_DIR%"
+if not exist "node_modules" (
+    echo Installing npm dependencies...
+    call npm install
+    if errorlevel 1 (
+        echo ERROR: Failed to install npm dependencies
+        popd
+        exit /b 1
+    )
+)
+echo Running npm build...
+call npm run build
+if errorlevel 1 (
+    echo ERROR: Failed to build theme
+    popd
+    exit /b 1
+)
+echo Theme built successfully!
+popd
+exit /b 0
+
+:theme_build
+if "%NODE_AVAILABLE%"=="0" (
+    echo ERROR: Node.js is required to build theme static files
+    echo Install Node.js from https://nodejs.org/
+    exit /b 1
+)
+call :theme_build_internal
+exit /b %errorlevel%
+
+:theme_check
+if not exist "%SCRIPT_DIR%searx\static\themes\simple\manifest.json" (
+    echo Theme not built: manifest.json not found
+    echo Run: manage.bat theme.build
+    exit /b 1
+)
+if not exist "%SCRIPT_DIR%searx\static\themes\simple\sxng-ltr.min.css" (
+    echo Theme files incomplete
+    echo Run: manage.bat theme.build
+    exit /b 1
+)
+if not exist "%SCRIPT_DIR%searx\static\themes\simple\sxng-core.min.js" (
+    echo Theme files incomplete
+    echo Run: manage.bat theme.build
+    exit /b 1
+)
+echo Theme static files are present
 exit /b 0
 
 :pyenv_cmd

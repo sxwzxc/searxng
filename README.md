@@ -12,6 +12,7 @@ SearXNG 主要针对 Linux/Unix 系统设计，但现在也可以在 Windows 上
 
 - **操作系统**: Windows 10/11 (64位)
 - **Python**: 3.10 或更高版本
+- **Node.js**: 18.0 或更高版本 (用于构建主题静态文件)
 - **内存**: 至少 2GB RAM
 - **磁盘空间**: 至少 500MB 可用空间
 - **可选**: Git for Windows (用于版本管理)
@@ -28,6 +29,20 @@ SearXNG 主要针对 Linux/Unix 系统设计，但现在也可以在 Windows 上
    python --version
    ```
    应该显示 Python 3.10.x 或更高版本
+
+### 1.5. 安装 Node.js (必需)
+
+1. 访问 [Node.js 官网](https://nodejs.org/)
+2. 下载 LTS 版本 (推荐 18.0 或更高版本)
+3. 运行安装程序，使用默认设置
+4. 完成安装后，验证安装：
+   ```cmd
+   node --version
+   npm --version
+   ```
+   应该显示 Node.js 和 npm 的版本号
+
+**重要提示**: Node.js 是必需的，用于构建搜索界面的主题和静态文件（CSS、JavaScript、图标等）。如果没有 Node.js，界面将无法正常显示。
 
 ### 2. 下载 SearXNG
 
@@ -61,8 +76,28 @@ manage.bat pyenv.install
 
 这个命令会：
 - 创建 Python 虚拟环境
-- 安装所有必需的依赖包
+- 安装所有必需的 Python 依赖包
+- **自动构建主题静态文件**（如果检测到 Node.js）
 - 首次运行可能需要几分钟时间
+
+**如果没有安装 Node.js**，您会看到警告信息。请先安装 Node.js，然后运行：
+```cmd
+manage.bat theme.build
+```
+
+### 3.5. 检查主题构建状态（可选）
+
+如果您想确认主题文件是否正确构建，可以运行：
+
+**使用命令提示符:**
+```cmd
+manage.bat theme.check
+```
+
+**使用 PowerShell:**
+```powershell
+.\manage.ps1 theme.check
+```
 
 ### 4. 运行 SearXNG
 
@@ -150,6 +185,8 @@ SearXNG 提供了两种 Windows 管理脚本：
 | `manage.bat help` | 显示帮助信息 |
 | `manage.bat pyenv.install` | 创建虚拟环境并安装依赖 |
 | `manage.bat pyenv.cmd <命令>` | 在虚拟环境中执行命令 |
+| `manage.bat theme.build` | 构建主题静态文件 |
+| `manage.bat theme.check` | 检查主题文件状态 |
 | `manage.bat webapp.run` | 运行开发服务器 |
 | `manage.bat py.clean` | 清理虚拟环境和构建文件 |
 | `manage.bat test.py` | 运行 Python 测试 |
@@ -161,6 +198,8 @@ SearXNG 提供了两种 Windows 管理脚本：
 | `.\manage.ps1 help` | 显示帮助信息 |
 | `.\manage.ps1 pyenv.install` | 创建虚拟环境并安装依赖 |
 | `.\manage.ps1 pyenv.cmd <命令>` | 在虚拟环境中执行命令 |
+| `.\manage.ps1 theme.build` | 构建主题静态文件 |
+| `.\manage.ps1 theme.check` | 检查主题文件状态 |
 | `.\manage.ps1 webapp.run` | 运行开发服务器 |
 | `.\manage.ps1 py.clean` | 清理虚拟环境和构建文件 |
 | `.\manage.ps1 test.py` | 运行 Python 测试 |
@@ -174,6 +213,12 @@ manage.bat help
 
 # 安装依赖
 manage.bat pyenv.install
+
+# 构建主题（如果安装时未构建）
+manage.bat theme.build
+
+# 检查主题状态
+manage.bat theme.check
 
 # 运行服务器
 manage.bat webapp.run
@@ -196,6 +241,12 @@ manage.bat py.clean
 # 安装依赖
 .\manage.ps1 pyenv.install
 
+# 构建主题（如果安装时未构建）
+.\manage.ps1 theme.build
+
+# 检查主题状态
+.\manage.ps1 theme.check
+
 # 运行服务器
 .\manage.ps1 webapp.run
 
@@ -215,6 +266,38 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
 ## 故障排除
+
+### 问题 0: 页面显示异常，图标过大或布局混乱
+
+**症状**: 访问 http://localhost:8888 时，页面布局不正常，图标显示异常大，CSS 样式缺失
+
+**原因**: 主题静态文件（CSS、JavaScript、图标）未构建或构建不完整
+
+**解决方案**:
+1. 确认已安装 Node.js：
+   ```cmd
+   node --version
+   ```
+   如果未安装，请访问 https://nodejs.org/ 下载安装
+
+2. 构建主题文件：
+   ```cmd
+   manage.bat theme.build
+   ```
+   或
+   ```powershell
+   .\manage.ps1 theme.build
+   ```
+
+3. 检查构建状态：
+   ```cmd
+   manage.bat theme.check
+   ```
+
+4. 重新启动服务器：
+   ```cmd
+   manage.bat webapp.run
+   ```
 
 ### 问题 1: Python 未找到
 
