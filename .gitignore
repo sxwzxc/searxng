@@ -1,29 +1,66 @@
+
 # to sync with .dockerignore & pyrightconfig.json
 
-*.pyc
-*/*.pyc
-*~
-*.swp
-geckodriver.log
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
+# Pytest and tooling
+.pytest_cache/
+.tox/
+.mypy_cache/
 .coverage
 coverage/
 
-.govm/
-.nvm/
-cache/
-build/
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Distribution / packaging
 dist/
-local/
-gh-pages/
+build/
 *.egg-info/
 
-/package-lock.json
+# Node / frontend
 /node_modules/
+/package-lock.json
+/yarn.lock
+client/simple/generated/
+client/simple/dist/
+client/simple/node_modules/
 
+# Logs and local runtime files
+*.log
+logs/
+*.pid
+tmp/
+temp/
+*.sqlite3
+*.db
+
+# Editor/IDE files
+.vscode/
 .idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
 
+# Environment files
+.env
+.env.*
+
+# Project-specific
 searx/version_frozen.py
 .dir-locals.el
 
-.python-version
+# Misc
+local/
+cache/
+gh-pages/
+.govm/
+.nvm/
