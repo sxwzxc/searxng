@@ -83,10 +83,22 @@ if not exist "%VENV_DIR%" (
 
 echo Installing dependencies...
 call "%VENV_DIR%\Scripts\activate.bat"
-python -m pip install --upgrade pip
+echo Upgrading pip and installing build tools...
+python -m pip install --upgrade pip setuptools wheel
+if errorlevel 1 (
+    echo ERROR: Failed to install build tools
+    exit /b 1
+)
+echo Installing base dependencies from requirements.txt...
+python -m pip install -r requirements.txt
+if errorlevel 1 (
+    echo ERROR: Failed to install base dependencies
+    exit /b 1
+)
+echo Installing project in editable mode with test dependencies...
 python -m pip install --use-pep517 --no-build-isolation -e ".[test]"
 if errorlevel 1 (
-    echo ERROR: Failed to install dependencies
+    echo ERROR: Failed to install project
     exit /b 1
 )
 echo Virtual environment created and dependencies installed successfully!

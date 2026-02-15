@@ -83,11 +83,25 @@ function Install-PyEnv {
     $activateScript = Join-Path $VenvDir "Scripts\Activate.ps1"
 
     & $activateScript
-    python -m pip install --upgrade pip
+    Write-Host "Upgrading pip and installing build tools..." -ForegroundColor Yellow
+    python -m pip install --upgrade pip setuptools wheel
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "ERROR: Failed to install build tools" -ForegroundColor Red
+        return $false
+    }
+    
+    Write-Host "Installing base dependencies from requirements.txt..." -ForegroundColor Yellow
+    python -m pip install -r requirements.txt
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "ERROR: Failed to install base dependencies" -ForegroundColor Red
+        return $false
+    }
+    
+    Write-Host "Installing project in editable mode with test dependencies..." -ForegroundColor Yellow
     python -m pip install --use-pep517 --no-build-isolation -e ".[test]"
 
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "ERROR: Failed to install dependencies" -ForegroundColor Red
+        Write-Host "ERROR: Failed to install project" -ForegroundColor Red
         return $false
     }
 
@@ -135,7 +149,7 @@ function Start-WebApp {
     $env:GRANIAN_RELOAD_PATHS = "./searx"
     $env:GRANIAN_PROCESS_NAME = "searxng"
     $env:GRANIAN_INTERFACE = "wsgi"
-    $env:GRANIAN_HOST = "::"
+    $env:GRANIAN_HOST = "0.0.0.0"
     $env:GRANIAN_PORT = "8888"
     $env:GRANIAN_WEBSOCKETS = "false"
     $env:GRANIAN_BLOCKING_THREADS = "4"
