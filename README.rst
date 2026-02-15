@@ -43,6 +43,10 @@ To fine-tune SearXNG, see `Configuration guide`_.
 
 Further information on *how-to* can be found `here <https://docs.searxng.org/admin/index.html>`_.
 
+**Windows Users**: See `WINDOWS.md`_ for Windows-specific installation instructions.
+
+.. _WINDOWS.md: WINDOWS.md
+
 Connect
 =======
 

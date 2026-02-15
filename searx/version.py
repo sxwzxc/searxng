@@ -6,6 +6,7 @@ import logging
 import os
 import shlex
 import subprocess
+import sys
 
 # fallback values
 # if there is searx.version_frozen module, and it is not possible to get the git tag
@@ -18,10 +19,13 @@ GIT_BRANCH: str = "unknown"
 logger = logging.getLogger("searx")
 
 SUBPROCESS_RUN_ENV = {
-    "PATH": os.environ["PATH"],
-    "LC_ALL": "C",
-    "LANGUAGE": "",
+    "PATH": os.environ.get("PATH", ""),
 }
+
+# Only set locale environment variables on Unix-like systems
+if sys.platform != 'win32':
+    SUBPROCESS_RUN_ENV["LC_ALL"] = "C"
+    SUBPROCESS_RUN_ENV["LANGUAGE"] = ""
 
 
 def subprocess_run(args: str | list[str] | tuple[str], **kwargs) -> str:  # type: ignore
@@ -29,7 +33,12 @@ def subprocess_run(args: str | list[str] | tuple[str], **kwargs) -> str:  # type
     non-zero, raise a :py:func:`subprocess.CalledProcessError`.
     """
     if not isinstance(args, (list, tuple)):
-        args = shlex.split(args)
+        # On Windows, don't use shlex.split() for simple git commands
+        # as it handles paths incorrectly
+        if sys.platform == 'win32':
+            args = args.split()
+        else:
+            args = shlex.split(args)
 
     kwargs["env"] = kwargs.get("env", SUBPROCESS_RUN_ENV)  # type: ignore
     kwargs["encoding"] = kwargs.get("encoding", "utf-8")  # type: ignore
@@ -37,6 +46,9 @@ def subprocess_run(args: str | list[str] | tuple[str], **kwargs) -> str:  # type
     kwargs["stderr"] = subprocess.PIPE
     # raise CalledProcessError if returncode is non-zero
     kwargs["check"] = True
+    # On Windows, don't use shell=True as it's not needed and can cause issues
+    if sys.platform == 'win32':
+        kwargs["shell"] = False
     # pylint: disable=subprocess-run-check
     proc = subprocess.run(args, **kwargs)  # type: ignore
     return proc.stdout.strip()  # type: ignore
