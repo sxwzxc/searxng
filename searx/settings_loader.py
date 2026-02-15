@@ -19,6 +19,7 @@ to be loaded. The rules used for this can be found in the
 
 import typing as t
 import os.path
+import sys
 from collections.abc import MutableMapping
 from itertools import filterfalse
 from pathlib import Path
@@ -108,7 +109,15 @@ def get_user_cfg_folder() -> Path | None:
 
     if not folder and not disable_etc:
         # default: rule 3.
-        folder = Path("/etc/searxng")
+        # Use platform-specific default configuration directory
+        if sys.platform == 'win32':
+            # On Windows, use %PROGRAMDATA%\searxng
+            programdata = os.environ.get('PROGRAMDATA', 'C:\\ProgramData')
+            folder = Path(programdata) / "searxng"
+        else:
+            # On Linux/Unix, use /etc/searxng
+            folder = Path("/etc/searxng")
+
         if not folder.is_dir():
             folder = None
 

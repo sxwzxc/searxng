@@ -27,10 +27,21 @@ def init():
 
     # pylint: disable=import-outside-toplevel
 
+    import sys
+    import os
     from . import config, cache, proxy
     from .. import settings_loader
 
-    cfg_file = (settings_loader.get_user_cfg_folder() or pathlib.Path("/etc/searxng")) / "favicons.toml"
+    user_cfg_folder = settings_loader.get_user_cfg_folder()
+    if user_cfg_folder is None:
+        # Use platform-specific default configuration directory
+        if sys.platform == 'win32':
+            programdata = os.environ.get('PROGRAMDATA', 'C:\\ProgramData')
+            user_cfg_folder = pathlib.Path(programdata) / "searxng"
+        else:
+            user_cfg_folder = pathlib.Path("/etc/searxng")
+
+    cfg_file = user_cfg_folder / "favicons.toml"
     if not cfg_file.exists():
         if is_active():
             logger.error(f"missing favicon config: {cfg_file}")
