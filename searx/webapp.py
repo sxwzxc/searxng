@@ -270,12 +270,19 @@ def custom_url_for(endpoint: str, **values):
         #     static/themes/<theme_name>/img/favicon.png
 
         arg_filename = values["filename"]
-        if arg_filename not in _STATIC_FILES:
-            # try file in the current theme
-            theme_name = sxng_request.preferences.get_value("theme")
-            theme_filename = f"themes/{theme_name}/{arg_filename}"
-            if theme_filename in _STATIC_FILES:
-                values["filename"] = theme_filename
+        static_root = settings['ui']['static_path']
+
+        # If the requested path is not namespaced to themes/, prefer the file
+        # from the current theme when there is no direct file at static root.
+        # This check is filesystem based (not just list based) to avoid stale
+        # or environment-specific cache mismatches.
+        if not arg_filename.startswith("themes/"):
+            direct_file_exists = os.path.isfile(os.path.join(static_root, arg_filename))
+            if not direct_file_exists:
+                theme_name = sxng_request.preferences.get_value("theme")
+                theme_filename = f"themes/{theme_name}/{arg_filename}"
+                if theme_filename in _STATIC_FILES:
+                    values["filename"] = theme_filename
 
         app_prefix = url_for("index")
         return f"{app_prefix}static/{values['filename']}"

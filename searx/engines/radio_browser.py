@@ -7,6 +7,7 @@
 """
 import random
 import socket
+import logging
 from urllib.parse import urlencode
 import babel
 from flask_babel import gettext
@@ -15,6 +16,9 @@ from searx.network import get
 from searx.enginelib import EngineCache
 from searx.enginelib.traits import EngineTraits
 from searx.locales import language_tag
+
+
+logger = logging.getLogger(__name__)
 
 
 about = {
@@ -69,13 +73,27 @@ def server_list() -> list[str]:
         return servers
 
     # hint: can take up to 40sec!
-    ips = socket.getaddrinfo("all.api.radio-browser.info", 80, 0, 0, socket.IPPROTO_TCP)
+    try:
+        ips = socket.getaddrinfo("all.api.radio-browser.info", 80, 0, 0, socket.IPPROTO_TCP)
+    except OSError as exc:
+        logger.warning("Failed to resolve radio-browser API host: %s", exc)
+        ips = []
+
     for ip_tuple in ips:
         _ip: str = ip_tuple[4][0]  # type: ignore
-        url = socket.gethostbyaddr(_ip)[0]
+        try:
+            url = socket.gethostbyaddr(_ip)[0]
+        except OSError:
+            # Reverse DNS is optional for building a server URL list. On some
+            # networks / platforms (notably Windows), gethostbyaddr may fail
+            # for valid addresses.
+            continue
         srv = "https://" + url
         if srv not in servers:
             servers.append(srv)
+
+    if not servers:
+        servers.append("https://all.api.radio-browser.info")
 
     # update server list once in 24h
     CACHE.set(key="servers", value=servers, expire=60 * 60 * 24)

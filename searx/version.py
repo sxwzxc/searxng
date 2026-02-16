@@ -78,7 +78,17 @@ def get_git_url_and_branch():
 
 
 def get_git_version() -> tuple[str, str, str]:
-    git_commit_date_hash: str = subprocess_run(r"git show -s --date='format:%Y.%m.%d' --format='%cd+%h'")
+    try:
+        git_commit_date_hash: str = subprocess_run(
+            ["git", "show", "-s", "--date=format:%Y.%m.%d", "--format=%cd+%h"]
+        )
+    except subprocess.CalledProcessError:
+        # Fallback for older git versions that don't support --date=format:...
+        # Format from --date=short (YYYY-MM-DD+<hash>) to YYYY.M.D+<hash>
+        git_commit_date_hash = subprocess_run(["git", "show", "-s", "--date=short", "--format=%cd+%h"])
+        git_commit_date, git_hash = git_commit_date_hash.split("+", 1)
+        year, month, day = git_commit_date.split("-")
+        git_commit_date_hash = f"{int(year)}.{int(month)}.{int(day)}+{git_hash}"
     # Remove leading zero from minor and patch level / replacement of PR-2122
     # which depended on the git version: '2023.05.06+..' --> '2023.5.6+..'
     git_commit_date_hash = git_commit_date_hash.replace('.0', '.')
@@ -88,12 +98,12 @@ def get_git_version() -> tuple[str, str, str]:
 
     # add "+dirty" suffix if there are uncommitted changes except searx/settings.yml
     try:
-        subprocess_run("git diff --quiet -- . ':!searx/settings.yml' ':!utils/brand.env'")
+        subprocess_run(["git", "diff", "--quiet", "--", ".", ":!searx/settings.yml", ":!utils/brand.env"])
     except subprocess.CalledProcessError as e:
         if e.returncode == 1:
             git_version += "+dirty"
         else:
-            logger.warning('"%s" returns an unexpected return code %i', e.returncode, e.cmd)
+            logger.warning('"%s" returns an unexpected return code %i', e.cmd, e.returncode)
 
     return git_version, tag_version, docker_tag
 

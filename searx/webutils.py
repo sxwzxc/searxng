@@ -190,7 +190,9 @@ def get_static_file_list() -> list[str]:
                 # ignore hidden file
                 continue
             if f.is_file():
-                file_list.append(str(f.relative_to(static_path)))
+                # Normalize separators for consistent URL-style matching across
+                # platforms (Windows yields backslashes by default).
+                file_list.append(f.relative_to(static_path).as_posix())
             if f.is_dir():
                 _walk(f)
 
