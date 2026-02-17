@@ -206,7 +206,10 @@ def get_result_templates(templates_path):
     for directory, _, files in os.walk(templates_path):
         if directory.endswith('result_templates'):
             for filename in files:
-                f = os.path.join(directory[templates_path_length:], filename)
+                # Normalize path separators for cross-platform template lookup.
+                # On Windows, os.path.join returns backslashes, while callers
+                # build template names with forward slashes.
+                f = os.path.join(directory[templates_path_length:], filename).replace('\\', '/')
                 result_templates.add(f)
     return result_templates
 
