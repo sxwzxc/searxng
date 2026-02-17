@@ -6,6 +6,7 @@ This guide helps you run SearXNG natively on Windows.
 
 - Windows 10/11 (64-bit)
 - Python 3.10 or later
+- Node.js 18.0 or later (required for theme building)
 - At least 2GB RAM
 
 ## Installation Steps
@@ -16,7 +17,15 @@ This guide helps you run SearXNG natively on Windows.
 2. **Important**: Check "Add Python to PATH" during installation
 3. Verify: `python --version` (should show 3.10+)
 
-### 2. Get SearXNG
+### 2. Install Node.js (Required)
+
+1. Download Node.js LTS from https://nodejs.org/
+2. Install using default settings
+3. Verify: `node --version` and `npm --version`
+
+**Note**: Node.js is required to build theme static files (CSS, JavaScript, icons). Without it, the UI will not display correctly.
+
+### 3. Get SearXNG
 
 **Option A: Using Git**
 ```cmd
@@ -27,7 +36,7 @@ cd searxng
 **Option B: Download ZIP**
 Download from https://github.com/searxng/searxng and extract.
 
-### 3. Install Dependencies
+### 4. Install Dependencies
 
 **Using PowerShell (Recommended):**
 ```powershell
@@ -39,7 +48,17 @@ Download from https://github.com/searxng/searxng and extract.
 manage.bat pyenv.install
 ```
 
-### 4. Run SearXNG
+This command will:
+- Create Python virtual environment
+- Install all required dependencies
+- **Automatically build theme static files** (if Node.js is detected)
+
+If Node.js is not installed, you'll see a warning. Install Node.js first, then run:
+```cmd
+manage.bat theme.build
+```
+
+### 5. Run SearXNG
 
 **Using PowerShell:**
 ```powershell
