@@ -95,6 +95,12 @@ if errorlevel 1 (
     echo ERROR: Failed to install base dependencies
     exit /b 1
 )
+echo Installing server dependencies from requirements-server.txt...
+python -m pip install -r requirements-server.txt
+if errorlevel 1 (
+    echo ERROR: Failed to install server dependencies
+    exit /b 1
+)
 echo Installing project in editable mode with test dependencies...
 python -m pip install --use-pep517 --no-build-isolation -e ".[test]"
 if errorlevel 1 (
@@ -132,7 +138,7 @@ set GRANIAN_RELOAD_IGNORE_WORKER_FAILURE=true
 set GRANIAN_RELOAD_PATHS=./searx
 set GRANIAN_PROCESS_NAME=searxng
 set GRANIAN_INTERFACE=wsgi
-set GRANIAN_HOST=::
+set GRANIAN_HOST=0.0.0.0
 set GRANIAN_PORT=8888
 set GRANIAN_WEBSOCKETS=false
 set GRANIAN_BLOCKING_THREADS=4

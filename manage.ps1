@@ -96,6 +96,13 @@ function Install-PyEnv {
         Write-Host "ERROR: Failed to install base dependencies" -ForegroundColor Red
         return $false
     }
+
+    Write-Host "Installing server dependencies from requirements-server.txt..." -ForegroundColor Yellow
+    python -m pip install -r requirements-server.txt
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "ERROR: Failed to install server dependencies" -ForegroundColor Red
+        return $false
+    }
     
     Write-Host "Installing project in editable mode with test dependencies..." -ForegroundColor Yellow
     python -m pip install --use-pep517 --no-build-isolation -e ".[test]"
